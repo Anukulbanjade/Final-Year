@@ -1,0 +1,2 @@
+models/devanagari_data.h5 filter=lfs diff=lfs merge=lfs -text
+Assets/train.csv filter=lfs diff=lfs merge=lfs -text

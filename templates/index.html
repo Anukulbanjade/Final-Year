@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devanagari Character Recognition</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 50px auto; }
+        .result { font-size: 1.2em; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>देवनागरी अक्षर पहिचान प्रणाली</h1>
+        <p>Upload an image of a handwritten Devanagari character to recognize it.</p>
+
+        <form id="uploadForm" onsubmit="event.preventDefault(); predictCharacter();">
+            <input type="file" id="imageInput" name="image" accept="image/*">
+            <button type="button" onclick="predictCharacter()">Predict</button>
+        </form>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        async function predictCharacter() {
+            const imageFile = document.getElementById('imageInput').files[0];
+            if (!imageFile) {
+                document.getElementById('result').innerText = "Please upload an image.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', imageFile); // Ensure key matches 'image' in Flask
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('result').innerText = `Predicted Class: ${data.predicted_class}`;
+                } else {
+                    document.getElementById('result').innerText = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                document.getElementById('result').innerText = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
