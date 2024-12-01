@@ -1,38 +1,222 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #121212;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #e0e0e0;
+}
+
 .App {
   text-align: center;
+  background: #1f1f1f;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+h1 {
+  color: #ffba08; /* Warm yellow-orange for contrast */
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+p {
+  font-size: 1rem;
+  color: #b0b0b0;
+  margin-bottom: 1.5rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.upload-form {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.upload-button {
+  background-color: #3AAFA9;
+  color: #ffffff;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.upload-button.active {
+  color: #81c784;
+}
+
+.upload-button:hover {
+  background-color: #2E9C94;
+  transform: translateY(-2px);
+}
+
+.submit-button {
+  background-color: #FF8C42;
+  color: #ffffff;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 1rem;
+}
+
+.submit-button:hover {
+  background-color: #E6762E;
+  transform: translateY(-2px);
+}
+
+.image-preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.image-preview {
+  margin-top: 1rem;
+}
+
+.image-preview img {
+  max-width: 100%;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.progress-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  color: #ffba08;
+  font-size: 1.5rem;
+  z-index: 1000;
 }
 
-.App-link {
-  color: #61dafb;
+.progress-text {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+  animation: pulse 1.5s infinite;
 }
 
-@keyframes App-logo-spin {
+.dots {
+  display: inline-block;
+  animation: dots 1s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+      color: rgba(255, 186, 8, 0);
+  }
+  40% {
+      color: rgba(255, 186, 8, 1);
+  }
+  60% {
+      color: rgba(255, 186, 8, 1);
+  }
+  80%, 100% {
+      color: rgba(255, 186, 8, 0);
+  }
+}
+
+.progress-bar-container {
+  width: 80%;
+  max-width: 400px;
+  height: 15px;
+  background-color: #333;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(to right, #3AAFA9, #2E9C94);
+  animation: progressFill 3s forwards;
+}
+
+@keyframes progressFill {
   from {
-    transform: rotate(0deg);
+      width: 0;
   }
   to {
-    transform: rotate(360deg);
+      width: 100%;
+  }
+}
+
+.loader {
+  color: #ffba08;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.result-section {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.result-section h2 {
+  color: #ffba08;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prediction-text {
+  font-size: 1.2rem;
+  color: #ffcc80;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.result-section img {
+  max-width: 100%;
+  margin-top: 1rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+@media (max-width: 600px) {
+  h1 {
+      font-size: 1.5rem;
+  }
+
+  .upload-button, .submit-button {
+      font-size: 0.9rem;
+      padding: 0.7rem 1rem;
+  }
+
+  .result-section h2 {
+      font-size: 1.3rem;
   }
 }
