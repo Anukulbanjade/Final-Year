@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS  # Add this for enabling CORS
 import os
 import logging
+import re
 import easyocr
 import cv2
 import numpy as np
+from flask import Flask, render_template, request, jsonify
+from werkzeug.utils import secure_filename
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -12,9 +13,6 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
-
-# Enable CORS for all domains
-CORS(app)
 
 # Configuration
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -26,7 +24,7 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Initialize EasyOCR reader with Nepali support
 try:
-    reader = easyocr.Reader(['ne'], gpu=False)  # Use CPU if GPU is not available
+    reader = easyocr.Reader(['ne'], gpu=True)  # Use CPU if GPU is not available
     logger.info("EasyOCR reader initialized successfully")
 except Exception as e:
     logger.error(f"Error initializing EasyOCR reader: {str(e)}")
@@ -115,42 +113,35 @@ def predict():
     """Handle image upload and text detection"""
     try:
         if 'file' not in request.files:
-            logger.error("No file uploaded")
             return jsonify({'error': 'No file uploaded'}), 400
 
         file = request.files['file']
         
         if file.filename == '':
-            logger.error("No file selected")
             return jsonify({'error': 'No file selected'}), 400
 
         if not allowed_file(file.filename):
-            logger.error(f"Invalid file type: {file.filename}")
             return jsonify({'error': 'Invalid file type. Allowed types: png, jpg, jpeg, gif'}), 400
 
         # Read and process the image
         filestr = file.read()
         if not filestr:
-            logger.error("File content is empty")
             return jsonify({'error': 'No content in the file'}), 400
         npimg = np.frombuffer(filestr, np.uint8)
         image = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
 
         if image is None:
-            logger.error("Failed to decode image")
             return jsonify({'error': 'Failed to process image'}), 400
 
         # Detect text in the image
         results = detect_text(image)
 
         if not results:
-            logger.warning('No Nepali characters detected in the image')
             return jsonify({
                 'warning': 'No Nepali characters detected in the image',
                 'detections': []
             }), 200
 
-        logger.info(f"Detected text: {results}")
         return jsonify({
             'success': True,
             'detections': results
@@ -163,7 +154,6 @@ def predict():
 @app.errorhandler(413)
 def request_entity_too_large(error):
     """Handle file size exceeded error"""
-    logger.error("File size exceeded the limit (16MB)")
     return jsonify({'error': 'File size exceeded the limit (16MB)'}), 413
 
 if __name__ == '__main__':

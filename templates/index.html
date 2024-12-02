@@ -3,52 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devanagari Character Recognition</title>
-    <style>
-        body { text-align: center; font-family: Arial, sans-serif; }
-        .container { max-width: 600px; margin: 50px auto; }
-        .result { font-size: 1.2em; margin-top: 20px; }
-    </style>
+    <title>Devanagari OCR</title>
 </head>
 <body>
-    <div class="container">
-        <h1>देवनागरी अक्षर पहिचान प्रणाली</h1>
-        <p>Upload an image of a handwritten Devanagari character to recognize it.</p>
+    <h1>Upload Image for Nepali Text Detection</h1>
+    <form id="uploadForm" enctype="multipart/form-data" method="POST" action="/predict">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
 
-        <form id="uploadForm" onsubmit="event.preventDefault(); predictCharacter();">
-            <input type="file" id="imageInput" name="image" accept="image/*">
-            <button type="button" onclick="predictCharacter()">Predict</button>
-        </form>
-
-        <div id="result" class="result"></div>
-    </div>
+    <div id="response"></div>
 
     <script>
-        async function predictCharacter() {
-            const imageFile = document.getElementById('imageInput').files[0];
-            if (!imageFile) {
-                document.getElementById('result').innerText = "Please upload an image.";
-                return;
-            }
+        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const responseDiv = document.getElementById("response");
 
-            const formData = new FormData();
-            formData.append('image', imageFile); // Ensure key matches 'image' in Flask
+            // Show loading message
+            responseDiv.innerHTML = "Processing...";
 
             try {
-                const response = await fetch('/predict', {
-                    method: 'POST',
+                const response = await fetch("/predict", {
+                    method: "POST",
                     body: formData
                 });
-                const data = await response.json();
+
+                const result = await response.json();
+
                 if (response.ok) {
-                    document.getElementById('result').innerText = `Predicted Class: ${data.predicted_class}`;
+                    if (result.detections && result.detections.length > 0) {
+                        responseDiv.innerHTML = "<h3>Detected Texts:</h3><ul>";
+                        result.detections.forEach(detection => {
+                            responseDiv.innerHTML += `<li>Text: ${detection.text} (Confidence: ${detection.confidence}%)</li>`;
+                        });
+                        responseDiv.innerHTML += "</ul>";
+                    } else {
+                        responseDiv.innerHTML = "No Nepali characters detected.";
+                    }
                 } else {
-                    document.getElementById('result').innerText = `Error: ${data.error}`;
+                    responseDiv.innerHTML = `Error: ${result.error}`;
                 }
             } catch (error) {
-                document.getElementById('result').innerText = `Error: ${error.message}`;
+                responseDiv.innerHTML = `An error occurred: ${error.message}`;
             }
-        }
+        });
     </script>
 </body>
 </html>
