@@ -5,14 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Devanagari OCR</title>
 </head>
-<body>
-    <h1>Upload Image for Nepali Text Detection</h1>
-    <form id="uploadForm" enctype="multipart/form-data" method="POST" action="/predict">
-        <input type="file" name="file" accept="image/*" required>
-        <button type="submit">Upload</button>
-    </form>
-
-    <div id="response"></div>
+<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; color: #333;">
+        <h1 style="color: #4CAF50; font-size: 2.5em; margin-bottom: 20px;">Devanagari OCR</h1>
+        <p style="font-size: 1.2em; margin-bottom: 20px;">Upload an image to detect Nepali text.</p>
+        <form id="uploadForm" enctype="multipart/form-data" method="POST" action="/predict" style="margin-bottom: 20px;">
+            <input 
+                type="file" 
+                name="file" 
+                accept="image/*" 
+                required 
+                style="padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;"
+            >
+            <br>
+            <button 
+                type="submit" 
+                style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size: 1em; border-radius: 4px; cursor: pointer;"
+            >
+                Upload
+            </button>
+        </form>
+        <div id="response" style="width: 100%; max-width: 600px; text-align: left; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"></div>
+    </div>
 
     <script>
         document.getElementById("uploadForm").addEventListener("submit", async function(event) {
@@ -21,7 +35,7 @@
             const responseDiv = document.getElementById("response");
 
             // Show loading message
-            responseDiv.innerHTML = "Processing...";
+            responseDiv.innerHTML = "<p style='color: #555;'>Processing...</p>";
 
             try {
                 const response = await fetch("/predict", {
@@ -33,19 +47,19 @@
 
                 if (response.ok) {
                     if (result.detections && result.detections.length > 0) {
-                        responseDiv.innerHTML = "<h3>Detected Texts:</h3><ul>";
+                        responseDiv.innerHTML = "<h3 style='color: #4CAF50;'>Detected Texts:</h3><ul style='list-style: none; padding: 0;'>";
                         result.detections.forEach(detection => {
-                            responseDiv.innerHTML += `<li>Text: ${detection.text} (Confidence: ${detection.confidence}%)</li>`;
+                            responseDiv.innerHTML += `<li style='margin-bottom: 10px;'><strong>Text:</strong> ${detection.text}</li>`;
                         });
                         responseDiv.innerHTML += "</ul>";
                     } else {
-                        responseDiv.innerHTML = "No Nepali characters detected.";
+                        responseDiv.innerHTML = "<p style='color: #999;'>No Nepali characters detected.</p>";
                     }
                 } else {
-                    responseDiv.innerHTML = `Error: ${result.error}`;
+                    responseDiv.innerHTML = `<p style='color: red;'>Error: ${result.error}</p>`;
                 }
             } catch (error) {
-                responseDiv.innerHTML = `An error occurred: ${error.message}`;
+                responseDiv.innerHTML = `<p style='color: red;'>An error occurred: ${error.message}</p>`;
             }
         });
     </script>
